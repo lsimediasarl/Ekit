@@ -816,7 +816,7 @@ Mark de Haan (mark AT starwave DOT nl)
 Samuel Dmaz
     - Spanish (Mexican)
         LanguageResources_es_MX.properties
-Tam�s �rdfalvi (devnull AT eagent DOT hu)
+Tamas Ardfalvi (devnull AT eagent DOT hu)
     - Hungarian
         LanguageResources_hu_HU.properties
 Yang Yu (yangyu AT users DOT sourceforge DOT net)
@@ -837,7 +837,7 @@ Piotr Malinski (riklaunim AT gmail DOT com)
 Vitaliy Yakovchuk (yakovchuk25 AT ukr DOT net)
     - Ukrainian
         LanguageResources_ru_UK.properties
-Melih �etin (cetin DOT melih AT gmail.com)
+Melih etin (cetin DOT melih AT gmail.com)
     - Turkish
         LanguageResources_tr_TR.properties
 Procelerate Technologies, Inc.
