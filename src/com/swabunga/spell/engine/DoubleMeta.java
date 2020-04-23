@@ -15,6 +15,8 @@ package com.swabunga.spell.engine;
  * and secondly could be static final. The function call SlavoGermaic was called
  * repeatedly in the process function, it is now only called once.
  *
+ * 2020-04-23 sbodmer
+ *   Removed non utf-8 char
  */
 class DoubleMeta implements Transformator {
 
