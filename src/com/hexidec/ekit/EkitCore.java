@@ -119,7 +119,7 @@ import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
  *
  * REQUIREMENTS Java 2 (JDK 1.5 or higher) Swing Library
  * 
- * 2020-03-15 sbodmer
+ * 2020-03-15 Stephan Bodmer
  *   Removed non utf-8 char
  * 
  */
@@ -3626,6 +3626,10 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		} while (!end && newPositon >= 0);
 	}
 
+	public void displayMenu(String key, boolean visible) {
+		JMenu jm = htMenus.get(key);
+		if (jm != null) jm.setVisible(visible);
+	}
 	/**
 	 * Accessors for enter key behaviour flag
 	 */
