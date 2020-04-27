@@ -17,8 +17,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.component;
 
 import java.awt.Frame;
@@ -37,56 +36,77 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import com.hexidec.util.Translatrix;
+import java.awt.Component;
+import java.awt.Dialog;
+import javax.swing.WindowConstants;
 
-/** Class for providing a dialog that lets the user specify values for tag attributes
-  */
-public class PropertiesDialog extends JDialog
-{
+/**
+ * Class for providing a dialog that lets the user specify values for tag
+ * attributes
+ * 
+ * 2020-04-28 sbodmer
+ *   Support for parent Dialog
+ * 
+ */
+public class PropertiesDialog extends JDialog {
+
 	private JOptionPane jOptionPane;
 	private Hashtable<String, JComponent> htInputFields;
 
-	public PropertiesDialog(Frame parent, String[] fields, String[] types, String[] values, String title, boolean bModal)
-	{
+	public PropertiesDialog(Frame parent, String[] fields, String[] types, String[] values,  String title, boolean bModal) {
 		super(parent, title, bModal);
+		init(fields, types, values);
+	}
+	public PropertiesDialog(Dialog parent, String[] fields, String[] types, String[] values,  String title, boolean bModal) {
+		super(parent, title, bModal);
+		init(fields, types, values);
+	}
+	
+	public PropertiesDialog(String[] fields, String[] types, String[] values,  String title, boolean bModal) {
+		super();
+		setModal(bModal);
+	}
+	
+	public static PropertiesDialog newPropertiesDialog(Component parent, String fields[], String types[], String values[], String title, boolean bModal) {
+		if (parent instanceof Dialog) {
+			return new PropertiesDialog((Dialog) parent, fields, types, values, title, bModal);
+			
+		} else if (parent instanceof Frame) {
+			return new PropertiesDialog((Frame) parent, fields, types, values, title, bModal);
+			
+		} else {
+			return new PropertiesDialog(fields, types, values, title, bModal);
+		}
+	}
+	
+	private void init(String[] fields, String[] types, String[] values) {
 		htInputFields = new Hashtable<String, JComponent>();
-		final Object[] buttonLabels = { Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel") };
+		final Object[] buttonLabels = {Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel")};
 		Object[] panelContents = new Object[(fields.length * 2)];
 		int objectCount = 0;
-		for(int iter = 0; iter < fields.length; iter++)
-		{
+		for (int iter = 0;iter < fields.length;iter++) {
 			String fieldName = fields[iter];
 			String fieldType = types[iter];
 			JComponent fieldComponent;
-			if(fieldType.equals("text"))
-			{
+			if (fieldType.equals("text")) {
 				fieldComponent = new JTextField(3);
-				if(values[iter] != null && values[iter].length() > 0)
-				{
-					((JTextField)(fieldComponent)).setText(values[iter]);
+				if (values[iter] != null && values[iter].length() > 0) {
+					((JTextField) (fieldComponent)).setText(values[iter]);
 				}
-			}
-			else if(fieldType.equals("bool"))
-			{
+			} else if (fieldType.equals("bool")) {
 				fieldComponent = new JCheckBox();
-				if(values[iter] != null)
-				{
-					((JCheckBox)(fieldComponent)).setSelected(values[iter] == "true");
+				if (values[iter] != null) {
+					((JCheckBox) (fieldComponent)).setSelected(values[iter] == "true");
 				}
-			}
-			else if(fieldType.equals("combo"))
-			{
+			} else if (fieldType.equals("combo")) {
 				fieldComponent = new JComboBox();
-				if(values[iter] != null)
-				{
+				if (values[iter] != null) {
 					StringTokenizer stParse = new StringTokenizer(values[iter], ",", false);
-					while(stParse.hasMoreTokens())
-					{
-						((JComboBox)(fieldComponent)).addItem(stParse.nextToken());
+					while (stParse.hasMoreTokens()) {
+						((JComboBox) (fieldComponent)).addItem(stParse.nextToken());
 					}
 				}
-			}
-			else
-			{
+			} else {
 				fieldComponent = new JTextField(3);
 			}
 			htInputFields.put(fieldName, fieldComponent);
@@ -97,69 +117,46 @@ public class PropertiesDialog extends JDialog
 		jOptionPane = new JOptionPane(panelContents, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, buttonLabels, buttonLabels[0]);
 
 		setContentPane(jOptionPane);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		jOptionPane.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent e)
-			{
+			public void propertyChange(PropertyChangeEvent e) {
 				String prop = e.getPropertyName();
-				if(isVisible() && (e.getSource() == jOptionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
-				{
+				if (isVisible() && (e.getSource() == jOptionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
 					Object value = jOptionPane.getValue();
-					if(value == JOptionPane.UNINITIALIZED_VALUE)
-					{
+					if (value == JOptionPane.UNINITIALIZED_VALUE) {
 						return;
 					}
-					if(value.equals(buttonLabels[0]))
-					{
+					if (value.equals(buttonLabels[0])) {
 						setVisible(false);
-					}
-					else
-					{
+					} else {
 						setVisible(false);
 					}
 				}
 			}
 		});
 		this.pack();
+		this.setLocationRelativeTo(getParent());
 	}
-
-	public PropertiesDialog(Frame parent, String[] fields, String[] types, String title, boolean bModal)
-	{
-		this(parent, fields, types, new String[fields.length], title, bModal);
-	}
-
-	public String getFieldValue(String fieldName)
-	{
+	
+	public String getFieldValue(String fieldName) {
 		Object dataField = htInputFields.get(fieldName);
-		if(dataField instanceof JTextField)
-		{
-			return ((JTextField)dataField).getText();
-		}
-		else if(dataField instanceof JCheckBox)
-		{
-			if(((JCheckBox)dataField).isSelected())
-			{
+		if (dataField instanceof JTextField) {
+			return ((JTextField) dataField).getText();
+		} else if (dataField instanceof JCheckBox) {
+			if (((JCheckBox) dataField).isSelected()) {
 				return "true";
-			}
-			else
-			{
+			} else {
 				return "false";
 			}
-		}
-		else if(dataField instanceof JComboBox)
-		{
-			return (String)(((JComboBox)dataField).getSelectedItem());
-		}
-		else
-		{
-			return (String)null;
+		} else if (dataField instanceof JComboBox) {
+			return (String) (((JComboBox) dataField).getSelectedItem());
+		} else {
+			return (String) null;
 		}
 	}
 
-	public String getDecisionValue()
-	{
+	public String getDecisionValue() {
 		return jOptionPane.getValue().toString();
 	}
 }
-

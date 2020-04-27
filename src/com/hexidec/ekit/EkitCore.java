@@ -119,7 +119,10 @@ import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
  *
  * REQUIREMENTS Java 2 (JDK 1.5 or higher) Swing Library
  * 
- * 2020-03-15 Stephan Bodmer
+ * 2020-04-28
+ *   Support for Dialog parent for PropertiesDialog class
+ * 
+ * 2020-04-15 Stephan Bodmer
  *   Removed non utf-8 char
  * 
  */
@@ -2091,7 +2094,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		int rows = 0;
 		int cols = 0;
 		if (fieldNames != null && fieldNames.length > 0) {
-			PropertiesDialog propertiesDialog = new PropertiesDialog(this.getFrame(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableDialogTitle"), true);
+			PropertiesDialog propertiesDialog = PropertiesDialog.newPropertiesDialog(getTopLevelAncestor(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableDialogTitle"), true);
 			propertiesDialog.setVisible(true);
 			String decision = propertiesDialog.getDecisionValue();
 			if (decision.equals(Translatrix.getTranslationString("DialogCancel"))) {
@@ -2154,7 +2157,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 					}
 				}
 			}
-			PropertiesDialog propertiesDialog = new PropertiesDialog(this.getFrame(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableEdit"), true);
+			PropertiesDialog propertiesDialog = PropertiesDialog.newPropertiesDialog(getTopLevelAncestor(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableEdit"), true);
 			propertiesDialog.setVisible(true);
 			if (!propertiesDialog.getDecisionValue().equals(Translatrix.getTranslationString("DialogCancel"))) {
 				String myAtributes = "";
@@ -2200,7 +2203,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 					}
 				}
 			}
-			PropertiesDialog propertiesDialog = new PropertiesDialog(this.getFrame(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableCellEdit"), true);
+			PropertiesDialog propertiesDialog = PropertiesDialog.newPropertiesDialog(getTopLevelAncestor(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("TableCellEdit"), true);
 			propertiesDialog.setVisible(true);
 			if (!propertiesDialog.getDecisionValue().equals(Translatrix.getTranslationString("DialogCancel"))) {
 				String myAtributes = "";
@@ -2471,7 +2474,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			}
 		}
 		if (fieldNames != null && fieldNames.length > 0) {
-			PropertiesDialog propertiesDialog = new PropertiesDialog(this.getFrame(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("FormDialogTitle"), true);
+			PropertiesDialog propertiesDialog = PropertiesDialog.newPropertiesDialog(getTopLevelAncestor(), fieldNames, fieldTypes, fieldValues, Translatrix.getTranslationString("FormDialogTitle"), true);
 			propertiesDialog.setVisible(true);
 			String decision = propertiesDialog.getDecisionValue();
 			if (decision.equals(Translatrix.getTranslationString("DialogCancel"))) {
