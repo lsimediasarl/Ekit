@@ -119,7 +119,7 @@ import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
  *
  * REQUIREMENTS Java 2 (JDK 1.5 or higher) Swing Library
  * 
- * 2020-04-28
+ * 2020-04-28 Stephan Bodmer
  *   Support for Dialog parent for PropertiesDialog class
  * 
  * 2020-04-15 Stephan Bodmer
@@ -231,6 +231,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	// Menu Keys
 	public static final String KEY_MENU_FILE = "file";
 	public static final String KEY_MENU_EDIT = "edit";
+	public static final String KEY_MENU_COLORS = "colors";
 	public static final String KEY_MENU_VIEW = "view";
 	public static final String KEY_MENU_FONT = "font";
 	public static final String KEY_MENU_FORMAT = "format";
@@ -918,7 +919,8 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		jMenuFontColor.add(new JMenuItem(new StyledEditorKit.ForegroundAction(Translatrix.getTranslationString("ColorWhite"), new Color(255, 255, 255))));
 		jMenuFontColor.add(new JMenuItem(new StyledEditorKit.ForegroundAction(Translatrix.getTranslationString("ColorYellow"), new Color(255, 255, 0))));
 		jMenuFont.add(jMenuFontColor);
-
+		htMenus.put(KEY_MENU_COLORS, jMenuFontColor);
+		
 		/* FORMAT Menu */
 		jMenuFormat = new JMenu(Translatrix.getTranslationString("Format"));
 		htMenus.put(KEY_MENU_FORMAT, jMenuFormat);
@@ -2667,9 +2669,8 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for inserting an image from a URL
 	 */
-	public void insertURLImage()
-			throws IOException, BadLocationException, RuntimeException {
-		ImageURLDialog imgUrlDialog = new ImageURLDialog(this.getFrame(), Translatrix.getTranslationString("ImageURLDialogTitle"), true);
+	public void insertURLImage() throws IOException, BadLocationException, RuntimeException {
+		ImageURLDialog imgUrlDialog = ImageURLDialog.newImageURLDialog(getTopLevelAncestor(), Translatrix.getTranslationString("ImageURLDialogTitle"), true);
 		imgUrlDialog.pack();
 		imgUrlDialog.setVisible(true);
 		String whatImage = imgUrlDialog.getImageUrl();
@@ -2695,14 +2696,14 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Empty spell check method, overwritten by spell checker extension class
 	 */
-	public void checkDocumentSpelling(Document doc) {;
+	public void checkDocumentSpelling(Document doc) {
+		//---
 	}
 
 	/**
 	 * Method for saving text as a complete HTML document
 	 */
-	public void writeOut(HTMLDocument doc, File whatFile)
-			throws IOException, BadLocationException {
+	public void writeOut(HTMLDocument doc, File whatFile)throws IOException, BadLocationException {
 		if (whatFile == null) {
 			whatFile = getFileFromChooser(".", JFileChooser.SAVE_DIALOG, extsHTML, Translatrix.getTranslationString("FiletypeHTML"));
 		}
@@ -2770,8 +2771,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		}
 	}
 
-	public String getRTFDocument()
-			throws IOException, BadLocationException {
+	public String getRTFDocument() throws IOException, BadLocationException {
 		StyledDocument doc = (StyledDocument) (jtpMain.getStyledDocument());
 		StringWriter strwriter = new StringWriter();
 		RTFEditorKit rtfKit = new RTFEditorKit();
@@ -2782,8 +2782,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for saving text as a Base64 encoded document
 	 */
-	public void writeOutBase64(String text, File b64File)
-			throws IOException, BadLocationException {
+	public void writeOutBase64(String text, File b64File) throws IOException, BadLocationException {
 		String base64text = Base64Codec.encode(text);
 		FileWriter fw = new FileWriter(b64File);
 		fw.write(base64text, 0, base64text.length());
@@ -2792,8 +2791,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		refreshOnUpdate();
 	}
 
-	public void writeOutBase64(String text)
-			throws IOException, BadLocationException {
+	public void writeOutBase64(String text)	throws IOException, BadLocationException {
 		File whatFile = getFileFromChooser(".", JFileChooser.SAVE_DIALOG, extsB64, Translatrix.getTranslationString("FiletypeB64"));
 		if (whatFile != null) {
 			writeOutBase64(text, whatFile);
@@ -2805,8 +2803,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	 * this because I found no easy way just to save the open document
 	 *
 	 */
-	public void saveDocument()
-			throws IOException, BadLocationException {
+	public void saveDocument() throws IOException, BadLocationException {
 		writeOut((HTMLDocument) (jtpMain.getDocument()), currentFile);
 	}
 
@@ -3019,7 +3016,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	 * dialog
 	 */
 	private void getImageFromChooser(String startDir, String[] exts, String desc) {
-		ImageFileDialog imgFileDialog = new ImageFileDialog(this.getFrame(), startDir, exts, desc, "", Translatrix.getTranslationString("ImageDialogTitle"), true);
+		ImageFileDialog imgFileDialog = ImageFileDialog.newImageFileDialog(getTopLevelAncestor(), startDir, exts, desc, "", Translatrix.getTranslationString("ImageDialogTitle"), true);
 		imgFileDialog.setVisible(true);
 		String decision = imgFileDialog.getDecisionValue();
 		if (decision.equals(Translatrix.getTranslationString("DialogAccept"))) {
@@ -3633,6 +3630,11 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		JMenu jm = htMenus.get(key);
 		if (jm != null) jm.setVisible(visible);
 	}
+	
+	public JMenu getMenu(String key) {
+		return htMenus.get(key);
+	}
+	
 	/**
 	 * Accessors for enter key behaviour flag
 	 */

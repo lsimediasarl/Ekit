@@ -17,8 +17,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.component;
 
 import java.awt.Frame;
@@ -31,32 +30,66 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import com.hexidec.util.Translatrix;
+import java.awt.Component;
+import java.awt.Dialog;
 
-/** Class for providing a dialog that lets the user specify a remote image URL and its attributes
-  */
-public class ImageURLDialog extends JDialog
-{
-	private String imageUrl    = new String();
-	private String imageAlt    = new String();
-	private String imageWidth  = new String();
+/**
+ * Class for providing a dialog that lets the user specify a remote image URL
+ * and its attributes
+ * 
+ * 2020-04-27 Stephan Bodmer
+ *   Support for Dialog parent
+ */
+public class ImageURLDialog extends JDialog {
+
+	private String imageUrl = new String();
+	private String imageAlt = new String();
+	private String imageWidth = new String();
 	private String imageHeight = new String();
 
 	private JOptionPane jOptionPane;
 
-	private final JTextField jtxtUrl    = new JTextField(3);
-	private final JTextField jtxfAlt    = new JTextField(3);
-	private final JTextField jtxfWidth  = new JTextField(3);
+	private final JTextField jtxtUrl = new JTextField(3);
+	private final JTextField jtxfAlt = new JTextField(3);
+	private final JTextField jtxfWidth = new JTextField(3);
 	private final JTextField jtxfHeight = new JTextField(3);
 
-	public ImageURLDialog(Frame parent, String title, boolean bModal)
-	{
+	public ImageURLDialog(Frame parent, String title, boolean bModal) {
 		super(parent, title, bModal);
 
-		final Object[] buttonLabels = { Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel") };
+		init();
+	}
+
+	public ImageURLDialog(Dialog parent, String title, boolean bModal) {
+		super(parent, title, bModal);
+
+		init();
+	}
+	
+	public ImageURLDialog(String title, boolean bModal) {
+		super();
+		setTitle(title);
+		setModal(bModal);
+	}
+	
+	public static ImageURLDialog newImageURLDialog(Component parent, String title, boolean bModal) {
+		if (parent instanceof Frame) {
+			return new ImageURLDialog((Frame) parent, title, bModal);
+			
+		} else if (parent instanceof Dialog) {
+			return new ImageURLDialog((Dialog) parent, title, bModal);
+						
+		} else {
+			return new ImageURLDialog(title, bModal);
+		}
+	}
+	
+	private void init() {
+		final Object[] buttonLabels = {Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel")};
 		Object[] panelContents = {
-			Translatrix.getTranslationString("ImageSrc"),    jtxtUrl,
-			Translatrix.getTranslationString("ImageAlt"),    jtxfAlt,
-			Translatrix.getTranslationString("ImageWidth"),  jtxfWidth,
+			Translatrix.getTranslationString("ImageSrc"), jtxtUrl,
+			Translatrix.getTranslationString("ImageAlt"), jtxfAlt,
+			Translatrix.getTranslationString("ImageWidth"), jtxfWidth,
 			Translatrix.getTranslationString("ImageHeight"), jtxfHeight
 		};
 		jOptionPane = new JOptionPane(panelContents, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, buttonLabels, buttonLabels[0]);
@@ -65,58 +98,60 @@ public class ImageURLDialog extends JDialog
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent we)
-			{
+			public void windowClosing(WindowEvent we) {
 				jOptionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
 			}
 		});
 
 		jOptionPane.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent e)
-			{
+			public void propertyChange(PropertyChangeEvent e) {
 				String prop = e.getPropertyName();
-				if(isVisible() 
-					&& (e.getSource() == jOptionPane)
-					&& (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
-				{
+				if (isVisible()
+						&& (e.getSource() == jOptionPane)
+						&& (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
 					Object value = jOptionPane.getValue();
-					if(value == JOptionPane.UNINITIALIZED_VALUE)
-					{
+					if (value == JOptionPane.UNINITIALIZED_VALUE) {
 						return;
 					}
-					if(value.equals(buttonLabels[0]))
-					{
-						imageUrl    = jtxtUrl.getText();
-						imageAlt    = jtxfAlt.getText();
-						imageWidth  = jtxfWidth.getText();
+					if (value.equals(buttonLabels[0])) {
+						imageUrl = jtxtUrl.getText();
+						imageAlt = jtxfAlt.getText();
+						imageWidth = jtxfWidth.getText();
 						imageHeight = jtxfHeight.getText();
 						setVisible(false);
-					}
-					else if(value.equals(buttonLabels[1]))
-					{
-						imageUrl    = "";
-						imageAlt    = "";
-						imageWidth  = "";
+					} else if (value.equals(buttonLabels[1])) {
+						imageUrl = "";
+						imageAlt = "";
+						imageWidth = "";
 						imageHeight = "";
 						setVisible(false);
-					}
-					else
-					{
+					} else {
 						jOptionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
 					}
 				}
 			}
 		});
 		this.pack();
+		this.setLocationRelativeTo(getParent());
+	}
+	
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
-	public String getImageUrl()    { return imageUrl; }
-	public String getImageAlt()    { return imageAlt; }
-	public String getImageWidth()  { return imageWidth; }
-	public String getImageHeight() { return imageHeight; }
+	public String getImageAlt() {
+		return imageAlt;
+	}
 
-	public String getDecisionValue()
-	{
+	public String getImageWidth() {
+		return imageWidth;
+	}
+
+	public String getImageHeight() {
+		return imageHeight;
+	}
+
+	public String getDecisionValue() {
 		return jOptionPane.getValue().toString();
 	}
 }

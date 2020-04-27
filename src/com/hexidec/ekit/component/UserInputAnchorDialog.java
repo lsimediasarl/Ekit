@@ -17,102 +17,120 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.component;
 
 import com.hexidec.ekit.EkitCore;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.border.*;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-public class UserInputAnchorDialog extends JDialog implements ActionListener
-{
+/**
+ * 2020-04-27 Stephan Bodmer
+ *   Support for Dialog parent
+ */
+public class UserInputAnchorDialog extends JDialog implements ActionListener {
 //	private EkitCore parentEkit;
+
 	private String inputText = null;
 	private final JTextField jtxfInput = new JTextField(32);
 
-	public UserInputAnchorDialog(EkitCore peKit, String title, boolean bModal, String defaultAnchor)
-	{		
-		super(peKit.getFrame(), title, bModal);
+	public UserInputAnchorDialog(Frame parent, EkitCore peKit, String title, boolean bModal, String defaultAnchor) {
+		super(parent, title, bModal);
 //		parentEkit = peKit;
 		jtxfInput.setText(defaultAnchor);
 		init();
 	}
 
-   	public void actionPerformed(ActionEvent e)
-   	{
-		if(e.getActionCommand().equals("accept"))
-		{
+	public UserInputAnchorDialog(Dialog parent, EkitCore peKit, String title, boolean bModal, String defaultAnchor) {
+		super(parent, title, bModal);
+//		parentEkit = peKit;
+		jtxfInput.setText(defaultAnchor);
+		init();
+	}
+	
+	public UserInputAnchorDialog(EkitCore peKit, String title, boolean bModal, String defaultAnchor) {
+		super();
+		setTitle(title);
+		setModal(bModal);
+		jtxfInput.setText(defaultAnchor);
+		init();
+	}
+	
+	public static UserInputAnchorDialog newUserInputAnchorDialog(Component parent, EkitCore peKit, String title, boolean bModal, String defautlAchor) {
+		if (parent instanceof Frame) {
+			return new UserInputAnchorDialog((Frame) parent, peKit, title, bModal, defautlAchor);
+			
+		} else if (parent instanceof Dialog) {
+			return new UserInputAnchorDialog((Dialog) parent, peKit, title, bModal, defautlAchor);
+						
+		} else {
+			return new UserInputAnchorDialog(peKit, title, bModal, defautlAchor);
+		}
+		
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("accept")) {
 			inputText = jtxfInput.getText();
 			setVisible(false);
-		}	
-	  	if(e.getActionCommand().equals("cancel"))
-		{
+		}
+		if (e.getActionCommand().equals("cancel")) {
 			inputText = null;
 			setVisible(false);
 		}
 	}
 
-	public void init()
-	{
-	  	Container contentPane = getContentPane();
-	  	contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-	  	setBounds(100,100,400,300);
-	  	setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+	public void init() {
+		Container contentPane = getContentPane();
+		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+		setSize(400, 300);
+		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
-	  	JPanel centerPanel = new JPanel();
-       	centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
-	  	JLabel anchorLabel = new JLabel("Anchor:", SwingConstants.LEFT);
-	  	centerPanel.add(anchorLabel);
-	  	centerPanel.add(jtxfInput);
+		JPanel centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
+		JLabel anchorLabel = new JLabel("Anchor:", SwingConstants.LEFT);
+		centerPanel.add(anchorLabel);
+		centerPanel.add(jtxfInput);
 
-		JPanel buttonPanel= new JPanel();	  	
+		JPanel buttonPanel = new JPanel();
 //	  	buttonPanel.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 
 		JButton saveButton = new JButton("Accept");
-	  	saveButton.setActionCommand("accept");
+		saveButton.setActionCommand("accept");
 		saveButton.addActionListener(this);
 
-	  	JButton cancelButton = new JButton("Cancel");
-	  	cancelButton.setActionCommand("cancel");
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setActionCommand("cancel");
 		cancelButton.addActionListener(this);
-
-		JButton filesButton = new JButton("Server Files...");
-	  	filesButton.setActionCommand("files");
-		filesButton.addActionListener(this);
 
 		buttonPanel.add(saveButton);
 		buttonPanel.add(cancelButton);
-		buttonPanel.add(filesButton);
-
+		
 		contentPane.add(centerPanel);
 		contentPane.add(buttonPanel);
 
- 		this.pack();
+		this.pack();
+		this.setLocationRelativeTo(getParent());
 		this.setVisible(true);
-   	}
+	}
 
-	public String getInputText()
-	{
+	public String getInputText() {
 		return inputText;
 	}
 
-	public void setAnchor(String anchor)
-	{
+	public void setAnchor(String anchor) {
 		jtxfInput.setText(anchor);
 	}
 }
-

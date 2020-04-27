@@ -21,12 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package com.hexidec.ekit.component;
 
 import java.awt.Frame;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JCheckBox;
@@ -38,20 +34,21 @@ import javax.swing.JTextField;
 import com.hexidec.util.Translatrix;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.util.HashMap;
 import javax.swing.WindowConstants;
 
 /**
  * Class for providing a dialog that lets the user specify values for tag
  * attributes
  * 
- * 2020-04-28 sbodmer
+ * 2020-04-28 Stephan Bodmer
  *   Support for parent Dialog
  * 
  */
 public class PropertiesDialog extends JDialog {
 
 	private JOptionPane jOptionPane;
-	private Hashtable<String, JComponent> htInputFields;
+	private HashMap<String, JComponent> htInputFields;
 
 	public PropertiesDialog(Frame parent, String[] fields, String[] types, String[] values,  String title, boolean bModal) {
 		super(parent, title, bModal);
@@ -80,7 +77,7 @@ public class PropertiesDialog extends JDialog {
 	}
 	
 	private void init(String[] fields, String[] types, String[] values) {
-		htInputFields = new Hashtable<String, JComponent>();
+		htInputFields = new HashMap<String, JComponent>();
 		final Object[] buttonLabels = {Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel")};
 		Object[] panelContents = new Object[(fields.length * 2)];
 		int objectCount = 0;

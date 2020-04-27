@@ -17,8 +17,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.action;
 
 import java.awt.Color;
@@ -37,130 +36,113 @@ import com.hexidec.ekit.component.SimpleInfoDialog;
 import com.hexidec.ekit.component.UserInputAnchorDialog;
 
 import com.hexidec.util.Translatrix;
+import java.awt.Component;
+import javax.swing.JComponent;
 
-/** Class for implementing custom HTML insertion actions
-*/
-public class CustomAction extends StyledEditorKit.StyledTextAction
-{
+/**
+ * Class for implementing custom HTML insertion actions
+ * 
+ * 2020-04-27 Stephan Bodmer
+ *   Support for Dialog parent
+ */
+public class CustomAction extends StyledEditorKit.StyledTextAction {
+
 	protected EkitCore parentEkit;
-	private   HTML.Tag htmlTag;
-	private   Hashtable htmlAttribs;
+	private HTML.Tag htmlTag;
+	private Hashtable htmlAttribs;
 
-	public CustomAction(EkitCore ekit, String actionName, HTML.Tag inTag, Hashtable attribs)
-	{
+	public CustomAction(EkitCore ekit, String actionName, HTML.Tag inTag, Hashtable attribs) {
 		super(actionName);
-		parentEkit  = ekit;
-		htmlTag     = inTag;
+		parentEkit = ekit;
+		htmlTag = inTag;
 		htmlAttribs = attribs;
 	}
 
-	public CustomAction(EkitCore ekit, String actionName, HTML.Tag inTag)
-	{
+	public CustomAction(EkitCore ekit, String actionName, HTML.Tag inTag) {
 		this(ekit, actionName, inTag, new Hashtable());
 	}
 
-	public void actionPerformed(ActionEvent ae)
-	{
-		if(this.isEnabled())
-		{
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		if (this.isEnabled()) {
 			Hashtable<String, String> htmlAttribs2 = new Hashtable<String, String>();
 			JTextPane parentTextPane = parentEkit.getTextPane();
 			String selText = parentTextPane.getSelectedText();
 			int textLength = -1;
-			if(selText != null)
-			{
+			if (selText != null) {
 				textLength = selText.length();
 			}
-			if(selText == null || textLength < 1)
-			{
+			if (selText == null || textLength < 1) {
 				SimpleInfoDialog sidWarn = new SimpleInfoDialog(parentEkit.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorNoTextSelected"), SimpleInfoDialog.ERROR);
-			}
-			else
-			{
+			} else {
 				int caretOffset = parentTextPane.getSelectionStart();
 				int internalTextLength = selText.length();
 				String currentAnchor = "";
 				// Somewhat ham-fisted code to obtain the first HREF in the selected text,
 				// which (if found) is passed to the URL HREF request dialog.
-				if(htmlTag.toString().equals(HTML.Tag.A.toString()))
-				{
+				if (htmlTag.toString().equals(HTML.Tag.A.toString())) {
 					SimpleAttributeSet sasText = null;
-					for(int i = caretOffset; i < caretOffset + internalTextLength; i++)
-					{
+					for (int i = caretOffset;i < caretOffset + internalTextLength;i++) {
 						parentTextPane.select(i, i + 1);
 						sasText = new SimpleAttributeSet(parentTextPane.getCharacterAttributes());
 						Enumeration attribEntries1 = sasText.getAttributeNames();
-						while(attribEntries1.hasMoreElements() && currentAnchor.equals(""))
-						{
-							Object entryKey   = attribEntries1.nextElement();
+						while (attribEntries1.hasMoreElements() && currentAnchor.equals("")) {
+							Object entryKey = attribEntries1.nextElement();
 							Object entryValue = sasText.getAttribute(entryKey);
-							if(entryKey.toString().equals(HTML.Tag.A.toString()))
-							{
-								if(entryValue instanceof SimpleAttributeSet)
-								{
-									Enumeration subAttributes = ((SimpleAttributeSet)entryValue).getAttributeNames();
-									while(subAttributes.hasMoreElements() && currentAnchor.equals(""))
-									{
+							if (entryKey.toString().equals(HTML.Tag.A.toString())) {
+								if (entryValue instanceof SimpleAttributeSet) {
+									Enumeration subAttributes = ((SimpleAttributeSet) entryValue).getAttributeNames();
+									while (subAttributes.hasMoreElements() && currentAnchor.equals("")) {
 										Object subKey = subAttributes.nextElement();
-										if(subKey.toString().toLowerCase().equals("href"))
-										{
-											currentAnchor = ((SimpleAttributeSet)entryValue).getAttribute(subKey).toString();
+										if (subKey.toString().toLowerCase().equals("href")) {
+											currentAnchor = ((SimpleAttributeSet) entryValue).getAttribute(subKey).toString();
 											break;
 										}
 									}
 								}
 							}
 						}
-						if(!currentAnchor.equals("")) { break; }
+						if (!currentAnchor.equals("")) {
+							break;
+						}
 					}
 				}
 				parentTextPane.select(caretOffset, caretOffset + internalTextLength);
-				SimpleAttributeSet sasTag  = new SimpleAttributeSet();
+				SimpleAttributeSet sasTag = new SimpleAttributeSet();
 				SimpleAttributeSet sasAttr = new SimpleAttributeSet();
-				if(htmlTag.toString().equals(HTML.Tag.A.toString()))
-				{
-					if(!htmlAttribs.containsKey("href"))
-					{
-						UserInputAnchorDialog uidInput = new UserInputAnchorDialog(parentEkit, Translatrix.getTranslationString("AnchorDialogTitle"), true, currentAnchor);
+				if (htmlTag.toString().equals(HTML.Tag.A.toString())) {
+					if (!htmlAttribs.containsKey("href")) {
+						JComponent comp = (JComponent) ae.getSource();
+						UserInputAnchorDialog uidInput = UserInputAnchorDialog.newUserInputAnchorDialog(comp.getTopLevelAncestor(), parentEkit, Translatrix.getTranslationString("AnchorDialogTitle"), true, currentAnchor);
 						String newAnchor = uidInput.getInputText();
 						uidInput.dispose();
-						if(newAnchor != null)
-						{
+						if (newAnchor != null) {
 							htmlAttribs2.put("href", newAnchor);
-						}
-						else
-						{
+						} else {
 							parentEkit.repaint();
 							return;
 						}
 					}
-				}
-				else if(htmlTag.toString().equals(HTML.Tag.FONT.toString()))
-				{
-					if(htmlAttribs.containsKey("color"))
-					{
+				} else if (htmlTag.toString().equals(HTML.Tag.FONT.toString())) {
+					if (htmlAttribs.containsKey("color")) {
 						Color color = new JColorChooser().showDialog(parentEkit.getFrame(), Translatrix.getTranslationString("CustomColorDialog"), Color.black);
-					    if(color != null)
-						{
+						if (color != null) {
 							StyledEditorKit.ForegroundAction customColorAction = new StyledEditorKit.ForegroundAction("CustomColor", color);
 							customColorAction.actionPerformed(ae);
 						}
 					}
 				}
-				if(htmlAttribs2.size() > 0)
-				{
+				if (htmlAttribs2.size() > 0) {
 					Enumeration attribEntries = htmlAttribs2.keys();
-					while(attribEntries.hasMoreElements())
-					{
-						Object entryKey   = attribEntries.nextElement();
+					while (attribEntries.hasMoreElements()) {
+						Object entryKey = attribEntries.nextElement();
 						Object entryValue = htmlAttribs2.get(entryKey);
 						insertAttribute(sasAttr, entryKey, entryValue);
 					}
 					SimpleAttributeSet baseAttrs = new SimpleAttributeSet(parentEkit.getTextPane().getCharacterAttributes());
 					Enumeration attribEntriesOriginal = baseAttrs.getAttributeNames();
-					while(attribEntriesOriginal.hasMoreElements())
-					{
-						Object entryKey   = attribEntriesOriginal.nextElement();
+					while (attribEntriesOriginal.hasMoreElements()) {
+						Object entryKey = attribEntriesOriginal.nextElement();
 						Object entryValue = baseAttrs.getAttribute(entryKey);
 						insertAttribute(sasAttr, entryKey, entryValue);
 					}
@@ -174,33 +156,24 @@ public class CustomAction extends StyledEditorKit.StyledTextAction
 		}
 	}
 
-	private void insertAttribute(SimpleAttributeSet attrs, Object key, Object value)
-	{
-		if(value instanceof AttributeSet)
-		{
-			AttributeSet subSet = (AttributeSet)value;
+	private void insertAttribute(SimpleAttributeSet attrs, Object key, Object value) {
+		if (value instanceof AttributeSet) {
+			AttributeSet subSet = (AttributeSet) value;
 			Enumeration attribEntriesSub = subSet.getAttributeNames();
-			while(attribEntriesSub.hasMoreElements())
-			{
-				Object subKey   = attribEntriesSub.nextElement();
+			while (attribEntriesSub.hasMoreElements()) {
+				Object subKey = attribEntriesSub.nextElement();
 				Object subValue = subSet.getAttribute(subKey);
 				insertAttr(attrs, subKey, subValue);
 			}
-		}
-		else
-		{
+		} else {
 			insertAttr(attrs, key, value);
 		}
 		// map CSS font-family declarations to FONT tag face declarations
-		if(key.toString().toLowerCase().equals("font-family"))
-		{
-			if(attrs.isDefined("face"))
-			{
+		if (key.toString().toLowerCase().equals("font-family")) {
+			if (attrs.isDefined("face")) {
 				insertAttr(attrs, "face", attrs.getAttribute("face"));
 				insertAttr(attrs, "font-family", attrs.getAttribute("face"));
-			}
-			else
-			{
+			} else {
 				insertAttr(attrs, "face", value);
 			}
 		}
@@ -218,13 +191,11 @@ public class CustomAction extends StyledEditorKit.StyledTextAction
 				insertAttr(attrs, "size", value);
 			}
 		}
-*/
+		 */
 	}
 
-	private void insertAttr(SimpleAttributeSet attrs, Object key, Object value)
-	{
-		while(attrs.isDefined(key))
-		{
+	private void insertAttr(SimpleAttributeSet attrs, Object key, Object value) {
+		while (attrs.isDefined(key)) {
 			attrs.removeAttribute(key);
 		}
 		attrs.addAttribute(key, value);
