@@ -17,8 +17,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.action;
 
 import java.awt.event.ActionEvent;
@@ -27,38 +26,35 @@ import javax.swing.text.StyledEditorKit;
 import com.hexidec.ekit.EkitCore;
 import com.hexidec.ekit.component.FontSelectorDialog;
 import com.hexidec.util.Translatrix;
+import javax.swing.JComponent;
 
-/** Class for implementing custom Font Family formating actions
-*/
-public class SetFontFamilyAction extends StyledEditorKit.FontFamilyAction
-{
-	protected String   name;
+/**
+ * Class for implementing custom Font Family formating actions
+ */
+public class SetFontFamilyAction extends StyledEditorKit.FontFamilyAction {
+
+	protected String name;
 	protected EkitCore parentEkit;
 
-	public SetFontFamilyAction(EkitCore ekit, String actionName)
-	{
+	public SetFontFamilyAction(EkitCore ekit, String actionName) {
 		super(actionName, "");
 		this.name = actionName;
-		parentEkit  = ekit;
+		parentEkit = ekit;
 	}
 
-	public void actionPerformed(ActionEvent ae)
-	{
-		if(this.name.equals("[EKITFONTSELECTOR]"))
-		{
-			if(parentEkit.getFontNameFromSelector() != null)
-			{
+	public void actionPerformed(ActionEvent ae) {
+		if (this.name.equals("[EKITFONTSELECTOR]")) {
+			if (parentEkit.getFontNameFromSelector() != null) {
 				StyledEditorKit.FontFamilyAction newFontFamilyAction = new StyledEditorKit.FontFamilyAction("fontFamilyAction", parentEkit.getFontNameFromSelector());
 				newFontFamilyAction.actionPerformed(ae);
 			}
-		}
-		else
-		{
-			FontSelectorDialog fsdInput = new FontSelectorDialog(parentEkit.getFrame(), Translatrix.getTranslationString("FontDialogTitle"), true, "face", parentEkit.getTextPane().getSelectedText());
+			
+		} else {
+			JComponent jcomp = (JComponent) ae.getSource();
+			FontSelectorDialog fsdInput = FontSelectorDialog.newFontSelectorDialog(parentEkit.getParentContainer(), Translatrix.getTranslationString("FontDialogTitle"), true, "face", parentEkit.getTextPane().getSelectedText());
 			String newFace = new String(fsdInput.getFontName());
 			fsdInput.dispose();
-			if(newFace != null)
-			{
+			if (newFace != null) {
 				ActionEvent ae2 = new ActionEvent(parentEkit.getTextPane(), ae.getID(), newFace, ae.getWhen(), ae.getModifiers());
 				StyledEditorKit.FontFamilyAction newFontFamilyAction = new StyledEditorKit.FontFamilyAction("fontFamilyAction", newFace);
 				newFontFamilyAction.actionPerformed(ae2);

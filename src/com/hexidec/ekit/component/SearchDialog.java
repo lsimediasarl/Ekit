@@ -17,8 +17,7 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
+ */
 package com.hexidec.ekit.component;
 
 import java.awt.Frame;
@@ -32,31 +31,51 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import com.hexidec.util.Translatrix;
+import java.awt.Container;
+import java.awt.Dialog;
 
-/** Class for providing a dialog that lets the user specify arguments for
-  * the Search Find/Replace functions
-  */
-public class SearchDialog extends JDialog
-{
-	private String inputFindTerm    = (String)null;
-	private String inputReplaceTerm = (String)null;
-	private boolean bCaseSensitive  = false;
-	private boolean bStartAtTop     = false;
-	private boolean bReplaceAll     = false;
+/**
+ * Class for providing a dialog that lets the user specify arguments for the
+ * Search Find/Replace functions
+ */
+public class SearchDialog extends JDialog {
+
+	private String inputFindTerm = (String) null;
+	private String inputReplaceTerm = (String) null;
+	private boolean bCaseSensitive = false;
+	private boolean bStartAtTop = false;
+	private boolean bReplaceAll = false;
 	private JOptionPane jOptionPane;
 
-	public SearchDialog(Frame parent, String title, boolean bModal, boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting)
-	{
+	public SearchDialog(Frame parent, String title, boolean bModal, boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting) {
 		super(parent, title, bModal);
-		final boolean isReplaceDialog    = bIsReplace;
-		final JTextField jtxfFindTerm    = new JTextField(3);
+
+		init(bIsReplace, bCaseSetting, bTopSetting);
+	}
+
+	public SearchDialog(Dialog parent, String title, boolean bModal, boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting) {
+		super(parent, title, bModal);
+
+		init(bIsReplace, bCaseSetting, bTopSetting);
+	}
+
+	public SearchDialog(String title, boolean bModal, boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting) {
+		super();
+		setTitle(title);
+		setModal(bModal);
+
+		init(bIsReplace, bCaseSetting, bTopSetting);
+	}
+
+	private void init(boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting) {
+		final boolean isReplaceDialog = bIsReplace;
+		final JTextField jtxfFindTerm = new JTextField(3);
 		final JTextField jtxfReplaceTerm = new JTextField(3);
-		final JCheckBox  jchkCase        = new JCheckBox(Translatrix.getTranslationString("SearchCaseSensitive"), bCaseSetting);
-		final JCheckBox  jchkTop         = new JCheckBox(Translatrix.getTranslationString("SearchStartAtTop"), bTopSetting);
-		final JCheckBox  jchkAll         = new JCheckBox(Translatrix.getTranslationString("SearchReplaceAll"), false);
-		final Object[] buttonLabels      = { Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel") };
-		if(bIsReplace)
-		{
+		final JCheckBox jchkCase = new JCheckBox(Translatrix.getTranslationString("SearchCaseSensitive"), bCaseSetting);
+		final JCheckBox jchkTop = new JCheckBox(Translatrix.getTranslationString("SearchStartAtTop"), bTopSetting);
+		final JCheckBox jchkAll = new JCheckBox(Translatrix.getTranslationString("SearchReplaceAll"), false);
+		final Object[] buttonLabels = {Translatrix.getTranslationString("DialogAccept"), Translatrix.getTranslationString("DialogCancel")};
+		if (bIsReplace) {
 			Object[] panelContents = {
 				Translatrix.getTranslationString("SearchFind"),
 				jtxfFindTerm,
@@ -67,9 +86,7 @@ public class SearchDialog extends JDialog
 				jchkTop
 			};
 			jOptionPane = new JOptionPane(panelContents, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, buttonLabels, buttonLabels[0]);
-		}
-		else
-		{
+		} else {
 			Object[] panelContents = {
 				Translatrix.getTranslationString("SearchFind"),
 				jtxfFindTerm,
@@ -82,59 +99,78 @@ public class SearchDialog extends JDialog
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent we)
-			{
+			public void windowClosing(WindowEvent we) {
 				jOptionPane.setValue(new Integer(JOptionPane.CLOSED_OPTION));
 			}
 		});
 
 		jOptionPane.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent e)
-			{
+			public void propertyChange(PropertyChangeEvent e) {
 				String prop = e.getPropertyName();
-				if(isVisible() 
-					&& (e.getSource() == jOptionPane)
-					&& (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY)))
-				{
+				if (isVisible()
+						&& (e.getSource() == jOptionPane)
+						&& (prop.equals(JOptionPane.VALUE_PROPERTY) || prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
 					Object value = jOptionPane.getValue();
-					if(value == JOptionPane.UNINITIALIZED_VALUE)
-					{
+					if (value == JOptionPane.UNINITIALIZED_VALUE) {
 						return;
 					}
 					jOptionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-					if(value.equals(buttonLabels[0]))
-					{
-						inputFindTerm  = jtxfFindTerm.getText();
+					if (value.equals(buttonLabels[0])) {
+						inputFindTerm = jtxfFindTerm.getText();
 						bCaseSensitive = jchkCase.isSelected();
-						bStartAtTop    = jchkTop.isSelected();
-						if(isReplaceDialog)
-						{
+						bStartAtTop = jchkTop.isSelected();
+						if (isReplaceDialog) {
 							inputReplaceTerm = jtxfReplaceTerm.getText();
-							bReplaceAll      = jchkAll.isSelected();
+							bReplaceAll = jchkAll.isSelected();
 						}
 						setVisible(false);
-					}
-					else
-					{
-						inputFindTerm    = (String)null;
-						inputReplaceTerm = (String)null;
-						bCaseSensitive   = false;
-						bStartAtTop      = false;
-						bReplaceAll      = false;
+					} else {
+						inputFindTerm = (String) null;
+						inputReplaceTerm = (String) null;
+						bCaseSensitive = false;
+						bStartAtTop = false;
+						bReplaceAll = false;
 						setVisible(false);
 					}
 				}
 			}
 		});
 		this.pack();
+		this.setLocationRelativeTo(getParent());
 		this.setVisible(true);
 		jtxfFindTerm.requestFocus();
 	}
 
-	public String  getFindTerm()      { return inputFindTerm; }
-	public String  getReplaceTerm()   { return inputReplaceTerm; }
-	public boolean getCaseSensitive() { return bCaseSensitive; }
-	public boolean getStartAtTop()    { return bStartAtTop; }
-	public boolean getReplaceAll()    { return bReplaceAll; }
-}
+	public static SearchDialog newSearchDialog(Container parent, String title, boolean bModal, boolean bIsReplace, boolean bCaseSetting, boolean bTopSetting) {
+		if (parent instanceof Frame) {
+			return new SearchDialog((Frame) parent, title, bModal, bIsReplace, bCaseSetting, bTopSetting);
 
+		} else if (parent instanceof Dialog) {
+			return new SearchDialog((Dialog) parent, title, bModal, bIsReplace, bCaseSetting, bTopSetting);
+
+		} else {
+			return new SearchDialog(title, bModal, bIsReplace, bCaseSetting, bTopSetting);
+		}
+
+	}
+
+	public String getFindTerm() {
+		return inputFindTerm;
+	}
+
+	public String getReplaceTerm() {
+		return inputReplaceTerm;
+	}
+
+	public boolean getCaseSensitive() {
+		return bCaseSensitive;
+	}
+
+	public boolean getStartAtTop() {
+		return bStartAtTop;
+	}
+
+	public boolean getReplaceAll() {
+		return bReplaceAll;
+	}
+}

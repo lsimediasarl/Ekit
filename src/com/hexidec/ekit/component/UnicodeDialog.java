@@ -18,13 +18,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-*/
+ */
 
-/*
+ /*
 Unicode block names and character value ranges taken from data sheets at http://www.unicode.org/charts/
 Copyright  1991-2004 Unicode, Inc. All rights reserved. Distributed under the Terms of Use in http://www.unicode.org/copyright.html.
-*/
-
+ */
 package com.hexidec.ekit.component;
 
 import com.hexidec.ekit.EkitCore;
@@ -32,9 +31,11 @@ import com.hexidec.util.Translatrix;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -54,8 +55,8 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-public class UnicodeDialog extends JDialog implements ActionListener
-{
+public class UnicodeDialog extends JDialog implements ActionListener {
+
 	public static final int UNICODE_BASE = 0;
 	public static final int UNICODE_SIGS = 47;
 	public static final int UNICODE_SPEC = 48;
@@ -63,254 +64,254 @@ public class UnicodeDialog extends JDialog implements ActionListener
 	public static final int UNICODE_DRAW = 54;
 	public static final int UNICODE_DING = 56;
 
-	private static final int    UNICODEBLOCKSIZE  = 256;
-	private static final String CMDCHANGEBLOCK    = "changeblock";
+	private static final int UNICODEBLOCKSIZE = 256;
+	private static final String CMDCHANGEBLOCK = "changeblock";
 
-	private static final String[] unicodeBlocks =
-	{
-		"Basic Latin & Latin-1 Supplement",		"Latin Extended-A",		"Latin Extended-B",		"IPA Extensions",		"Spacing Modifier Letters",		"Combining Diacritical Marks",		"Greek and Coptic",		"Cyrillic",		"Cyrillic Supplement",		"Armenian",		"Hebrew",		"Arabic",		"Syriac",		"Thaana",		"Devanagari",		"Bengali",		"Gurmukhi",		"Gujarati",		"Oriya",		"Tamil",		"Telugu",		"Kannada",		"Malayalam",		"Sinhala",		"Thai",		"Lao",		"Tibetan",		"Myanmar",		"Georgian",		"Hanjul Jamo",		"Ethiopic",		"Cherokee",		"Unified Canadian Aboriginal Syllabics",		"Ogham",		"Runic",		"Tagalog",		"Hanunoo",		"Buhid",		"Tagbanwa",		"Khmer",		"Mongolian",		"Limbu",		"Tai Le",		"Khmer Symbols",		"Phonetic Extensions",		"Latin Extended Additional",		"Greek Extended",		"Punctuation / Scripts / Currency / Diacriticals",
-		"Letterlike Symbols / Number Forms / Arrows",
-		"Mathematical Operators",
-		"Miscellaneous Technical",
-		"Control Pictures",
-		"Optical Character Recognition",
-		"Enclosed Alphanumerics",
-		"Box Drawing / Block Elements / Geometric Shapes",
-		"Miscellaneous Symbols",
-		"Dingbats / Math-A / Arrows-A",
-		"Braille Patterns",
-		"Arrows-B / Math-B",
-		"Supplemental Mathematical Operators",
-		"Miscellaneous Symbols and Arrows",
-		"CJK Radicals Supplement",
-		"Kangxi Radicals",
-		"Ideographic Description Characters",
-		"CJK Symbols and Punctuation",
-		"Hiragana",
-		"Katakana",
-		"Bopomofo",
-		"Hangul Compatibility Jamo",
-		"Kanbun",
-		"Bopomofo Extended",
-		"Katakana Phonetic Extensions",
-		"Enclosed CJK Letters and Months",
-		"CJK Compatibility",
-		"CJK Unified Ideographs Extension A",
-		"Yijing Hexagram Symbols",
-		"CJK Unified Ideographs",
-		"Yi Syllables",
-		"Yi Radicals",
-		"Hangul Symbols",
-		"RESERVED AREA: High Surrogates",
-		"RESERVED AREA: Low Surrogates",
-		"RESERVED AREA: Private Use",
-		"CJK Compatibility Ideographs",
-		"Alphabetic Presentation Forms",
-		"Arabic Presentation Forms-A",
-		"Variation Selectors",
-		"Combining Half Marks",
-		"CJK Compatibility Forms",
-		"Small Form Variants",
-		"Arabic Presentation Forms-B",
-		"Halfwidth and Fullwidth Forms",
-		"Specials"
-	};
+	private static final String[] unicodeBlocks
+			= {
+				"Basic Latin & Latin-1 Supplement", "Latin Extended-A", "Latin Extended-B", "IPA Extensions", "Spacing Modifier Letters", "Combining Diacritical Marks", "Greek and Coptic", "Cyrillic", "Cyrillic Supplement", "Armenian", "Hebrew", "Arabic", "Syriac", "Thaana", "Devanagari", "Bengali", "Gurmukhi", "Gujarati", "Oriya", "Tamil", "Telugu", "Kannada", "Malayalam", "Sinhala", "Thai", "Lao", "Tibetan", "Myanmar", "Georgian", "Hanjul Jamo", "Ethiopic", "Cherokee", "Unified Canadian Aboriginal Syllabics", "Ogham", "Runic", "Tagalog", "Hanunoo", "Buhid", "Tagbanwa", "Khmer", "Mongolian", "Limbu", "Tai Le", "Khmer Symbols", "Phonetic Extensions", "Latin Extended Additional", "Greek Extended", "Punctuation / Scripts / Currency / Diacriticals",
+				"Letterlike Symbols / Number Forms / Arrows",
+				"Mathematical Operators",
+				"Miscellaneous Technical",
+				"Control Pictures",
+				"Optical Character Recognition",
+				"Enclosed Alphanumerics",
+				"Box Drawing / Block Elements / Geometric Shapes",
+				"Miscellaneous Symbols",
+				"Dingbats / Math-A / Arrows-A",
+				"Braille Patterns",
+				"Arrows-B / Math-B",
+				"Supplemental Mathematical Operators",
+				"Miscellaneous Symbols and Arrows",
+				"CJK Radicals Supplement",
+				"Kangxi Radicals",
+				"Ideographic Description Characters",
+				"CJK Symbols and Punctuation",
+				"Hiragana",
+				"Katakana",
+				"Bopomofo",
+				"Hangul Compatibility Jamo",
+				"Kanbun",
+				"Bopomofo Extended",
+				"Katakana Phonetic Extensions",
+				"Enclosed CJK Letters and Months",
+				"CJK Compatibility",
+				"CJK Unified Ideographs Extension A",
+				"Yijing Hexagram Symbols",
+				"CJK Unified Ideographs",
+				"Yi Syllables",
+				"Yi Radicals",
+				"Hangul Symbols",
+				"RESERVED AREA: High Surrogates",
+				"RESERVED AREA: Low Surrogates",
+				"RESERVED AREA: Private Use",
+				"CJK Compatibility Ideographs",
+				"Alphabetic Presentation Forms",
+				"Arabic Presentation Forms-A",
+				"Variation Selectors",
+				"Combining Half Marks",
+				"CJK Compatibility Forms",
+				"Small Form Variants",
+				"Arabic Presentation Forms-B",
+				"Halfwidth and Fullwidth Forms",
+				"Specials"
+			};
 
-	private final int[] unicodeBlockStart =
-	{
-		0,
-		256,
-		384,
-		592,
-		688,
-		768,
-		880,
-		1024,
-		1280,
-		1328,
-		1424,
-		1536,
-		1792,
-		1920,
-		2304,
-		2432,
-		2560,
-		2688,
-		2816,
-		2944,
-		3072,
-		3200,
-		3328,
-		3456,
-		3584,
-		3712,
-		3840,
-		4096,
-		4256,
-		4352,
-		4608,
-		5024,
-		5120,
-		5760,
-		5792,
-		5888,
-		5920,
-		5952,
-		5984,
-		6016,
-		6144,
-		6400,
-		6480,
-		6624,
-		7424,
-		7680,
-		7936,
-		8192,
-		8448,
-		8704,
-		8960,
-		9216,
-		9280,
-		9312,
-		9472,
-		9728,
-		9984,
-		10240,
-		10496,
-		10752,
-		11008,
-		11904,
-		12032,
-		12272,
-		12288,
-		12352,
-		12448,
-		12544,
-		12592,
-		12688,
-		12704,
-		12784,
-		12800,
-		13056,
-		13312,
-		19904,
-		19968,
-		40960,
-		42128,
-		44032,
-		55296,
-		56320,
-		57344,
-		63744,
-		64256,
-		64336,
-		65024,
-		65056,
-		65072,
-		65104,
-		65136,
-		65280,
-		65520
-	};
+	private final int[] unicodeBlockStart
+			= {
+				0,
+				256,
+				384,
+				592,
+				688,
+				768,
+				880,
+				1024,
+				1280,
+				1328,
+				1424,
+				1536,
+				1792,
+				1920,
+				2304,
+				2432,
+				2560,
+				2688,
+				2816,
+				2944,
+				3072,
+				3200,
+				3328,
+				3456,
+				3584,
+				3712,
+				3840,
+				4096,
+				4256,
+				4352,
+				4608,
+				5024,
+				5120,
+				5760,
+				5792,
+				5888,
+				5920,
+				5952,
+				5984,
+				6016,
+				6144,
+				6400,
+				6480,
+				6624,
+				7424,
+				7680,
+				7936,
+				8192,
+				8448,
+				8704,
+				8960,
+				9216,
+				9280,
+				9312,
+				9472,
+				9728,
+				9984,
+				10240,
+				10496,
+				10752,
+				11008,
+				11904,
+				12032,
+				12272,
+				12288,
+				12352,
+				12448,
+				12544,
+				12592,
+				12688,
+				12704,
+				12784,
+				12800,
+				13056,
+				13312,
+				19904,
+				19968,
+				40960,
+				42128,
+				44032,
+				55296,
+				56320,
+				57344,
+				63744,
+				64256,
+				64336,
+				65024,
+				65056,
+				65072,
+				65104,
+				65136,
+				65280,
+				65520
+			};
 
-	private final int[] unicodeBlockEnd =
-	{
-		255,
-		383,
-		591,
-		687,
-		767,
-		879,
-		1023,
-		1279,
-		1327,
-		1423,
-		1535,
-		1791,
-		1871,
-		1983,
-		2431,
-		2559,
-		2687,
-		2815,
-		2943,
-		3071,
-		3199,
-		3327,
-		3455,
-		3583,
-		3711,
-		3839,
-		4095,
-		4255,
-		4351,
-		4607,
-		4991,
-		5119,
-		5759,
-		5791,
-		5887,
-		5919,
-		5951,
-		5983,
-		6015,
-		6143,
-		6319,
-		6479,
-		6527,
-		6655,
-		7551,
-		7935,
-		8191,
-		8447,
-		8703,
-		8959,
-		9215,
-		9279,
-		9311,
-		9471,
-		9727,
-		9983,
-		10239,
-		10495,
-		10751,
-		11007,
-		11263,
-		12031,
-		12255,
-		12287,
-		12351,
-		12447,
-		12543,
-		12591,
-		12687,
-		12703,
-		12735,
-		12799,
-		13055,
-		13311,
-		19903,
-		19967,
-		40879,
-		42127,
-		42191,
-		55215,
-		56319,
-		57343,
-		63743,
-		64255,
-		64335,
-		65023,
-		65039,
-		65071,
-		65103,
-		65135,
-		65279,
-		65519,
-		65535
-	};
+	private final int[] unicodeBlockEnd
+			= {
+				255,
+				383,
+				591,
+				687,
+				767,
+				879,
+				1023,
+				1279,
+				1327,
+				1423,
+				1535,
+				1791,
+				1871,
+				1983,
+				2431,
+				2559,
+				2687,
+				2815,
+				2943,
+				3071,
+				3199,
+				3327,
+				3455,
+				3583,
+				3711,
+				3839,
+				4095,
+				4255,
+				4351,
+				4607,
+				4991,
+				5119,
+				5759,
+				5791,
+				5887,
+				5919,
+				5951,
+				5983,
+				6015,
+				6143,
+				6319,
+				6479,
+				6527,
+				6655,
+				7551,
+				7935,
+				8191,
+				8447,
+				8703,
+				8959,
+				9215,
+				9279,
+				9311,
+				9471,
+				9727,
+				9983,
+				10239,
+				10495,
+				10751,
+				11007,
+				11263,
+				12031,
+				12255,
+				12287,
+				12351,
+				12447,
+				12543,
+				12591,
+				12687,
+				12703,
+				12735,
+				12799,
+				13055,
+				13311,
+				19903,
+				19967,
+				40879,
+				42127,
+				42191,
+				55215,
+				56319,
+				57343,
+				63743,
+				64255,
+				64335,
+				65023,
+				65039,
+				65071,
+				65103,
+				65135,
+				65279,
+				65519,
+				65535
+			};
 
-/*
+	/*
 	Original Sets (some are combined to make the dialog more usable)
 	"Basic Latin & Latin-1 Supplement"
 		"Basic Latin"								-> 0-127
@@ -335,9 +336,9 @@ public class UnicodeDialog extends JDialog implements ActionListener
 	"Arrows-B / Math-B"
 		"Supplemental Arrows-B"						-> 10496-10623
 		"Miscellaneous Mathematical Symbols-B"		-> 10624-10751
-*/
+	 */
 
-/*
+ /*
 	Unicode high characters (these are out of range for Java char, which cuts off at 65536)
 	"Linear B Syllabary"						-> 65536-65663
 	"Linear B Ideograms"						-> 65664-65791
@@ -359,8 +360,7 @@ public class UnicodeDialog extends JDialog implements ActionListener
 	"Variations Selector Supplement"			-> 917760-917999
 	"Supplementary Private Use Area-A"			-> 983040-1048573
 	"Supplementary Private Use Area-B"			-> 1048576-1114109
-*/
-
+	 */
 	private EkitCore parentEkit;
 	private Font buttonFont;
 	private JToggleButton[] buttonArray = new JToggleButton[UNICODEBLOCKSIZE];
@@ -368,48 +368,64 @@ public class UnicodeDialog extends JDialog implements ActionListener
 	private JComboBox jcmbBlockSelector;
 	private JComboBox jcmbPageSelector;
 
-	public UnicodeDialog(EkitCore parent, String title, boolean bModal, int index)
-	{
-		super(parent.getFrame(), title, bModal);
-		parentEkit = parent;
+	public UnicodeDialog(Frame parent, EkitCore parentEkit, String title, boolean bModal, int index) {
+		super(parent, title, bModal);
+		this.parentEkit = parentEkit;
 		init(index);
 	}
 
-	public void actionPerformed(ActionEvent ae)
-	{
-		if(ae.getActionCommand().equals(CMDCHANGEBLOCK))
-		{
-			populateButtons(jcmbBlockSelector.getSelectedIndex(), jcmbPageSelector.getSelectedIndex());
+	public UnicodeDialog(Dialog parent, EkitCore parentEkit, String title, boolean bModal, int index) {
+		super(parent, title, bModal);
+		this.parentEkit = parentEkit;
+		init(index);
+	}
+	
+	public UnicodeDialog(EkitCore parentEkit, String title, boolean bModal, int index) {
+		super();
+		setTitle(title);
+		setModal(bModal);
+		
+		this.parentEkit = parentEkit;
+		init(index);
+	}
+	
+	public static UnicodeDialog newUnicodeDialog(EkitCore ekit, String title, boolean bModal, int index) {
+		if (ekit.getParentContainer() instanceof Frame) {
+			return new UnicodeDialog((Frame) ekit.getParentContainer(), ekit,title, bModal, index);
+			
+		} else if (ekit.getParentContainer() instanceof Dialog) {
+			return new UnicodeDialog((Dialog) ekit.getParentContainer(), ekit, title, bModal, index);
+						
+		} else {
+			return new UnicodeDialog(ekit, title, bModal, index);
 		}
-		else if(ae.getActionCommand().equals("close"))
-		{
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent ae) {
+		if (ae.getActionCommand().equals(CMDCHANGEBLOCK)) {
+			populateButtons(jcmbBlockSelector.getSelectedIndex(), jcmbPageSelector.getSelectedIndex());
+		} else if (ae.getActionCommand().equals("close")) {
 			setVisible(false);
 			this.dispose();
-		}
-		else if(ae.getActionCommand().equals(""))
-		{
+		} else if (ae.getActionCommand().equals("")) {
 			// ignore
-		}
-		else
-		{
-			try
-			{
+		} else {
+			try {
 				parentEkit.insertUnicodeChar(ae.getActionCommand());
+			} catch (java.io.IOException ioe) {
+				System.out.println("IOException during character insertion : " + ioe.getMessage());
+			} catch (javax.swing.text.BadLocationException ble) {
+				System.out.println("BadLocationException during character insertion : " + ble.getMessage());
 			}
-			catch(java.io.IOException ioe) { System.out.println("IOException during character insertion : " + ioe.getMessage()); }
-			catch(javax.swing.text.BadLocationException ble) { System.out.println("BadLocationException during character insertion : " + ble.getMessage()); }
 		}
 	}
 
-	public void init(int startIndex)
-	{
+	public void init(int startIndex) {
 		String customFont = Translatrix.getTranslationString("UnicodeDialogButtonFont");
-		if(customFont != null && customFont.length() > 0)
-		{
+		if (customFont != null && customFont.length() > 0) {
 			buttonFont = new Font(Translatrix.getTranslationString("UnicodeDialogButtonFont"), Font.PLAIN, 12);
-		}
-		else
-		{
+		} else {
 			buttonFont = new Font("Monospaced", Font.PLAIN, 12);
 		}
 
@@ -421,25 +437,22 @@ public class UnicodeDialog extends JDialog implements ActionListener
 		centerPanel.setLayout(new GridLayout(0, 17, 0, 0));
 		buttonGroup = new ButtonGroup();
 
-		int prefButtonWidth  = 32;
+		int prefButtonWidth = 32;
 		int prefButtonHeight = 32;
 
 		centerPanel.add(new JLabel(""));
-		for(int labelLoop = 0; labelLoop < 16; labelLoop++)
-		{
-			JLabel jlblMarker = new JLabel("x" + (labelLoop > 9 ? "" + (char)(65 + (labelLoop - 10)) : "" + labelLoop));
+		for (int labelLoop = 0;labelLoop < 16;labelLoop++) {
+			JLabel jlblMarker = new JLabel("x" + (labelLoop > 9 ? "" + (char) (65 + (labelLoop - 10)) : "" + labelLoop));
 			jlblMarker.setHorizontalAlignment(SwingConstants.CENTER);
 			jlblMarker.setVerticalAlignment(SwingConstants.CENTER);
 			jlblMarker.setForeground(new Color(0.5f, 0.5f, 0.75f));
 			centerPanel.add(jlblMarker);
 		}
 
-		int labelcount  = 0;
-		for(int counter = 0; counter < UNICODEBLOCKSIZE; counter++)
-		{
-			if((counter % 16) == 0)
-			{
-				JLabel jlblMarker = new JLabel((labelcount > 9 ? "" + (char)(65 + (labelcount - 10)) : "" + labelcount) + "x");
+		int labelcount = 0;
+		for (int counter = 0;counter < UNICODEBLOCKSIZE;counter++) {
+			if ((counter % 16) == 0) {
+				JLabel jlblMarker = new JLabel((labelcount > 9 ? "" + (char) (65 + (labelcount - 10)) : "" + labelcount) + "x");
 				jlblMarker.setHorizontalAlignment(SwingConstants.CENTER);
 				jlblMarker.setVerticalAlignment(SwingConstants.CENTER);
 				jlblMarker.setForeground(new Color(0.5f, 0.5f, 0.75f));
@@ -451,14 +464,13 @@ public class UnicodeDialog extends JDialog implements ActionListener
 			buttonArray[counter].setFont(buttonFont);
 			buttonArray[counter].setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.LOWERED));
 			buttonArray[counter].addActionListener(this);
-			if(counter == 0)
-			{
-				FontRenderContext frcLocal = ((java.awt.Graphics2D)(parentEkit.getGraphics())).getFontRenderContext();
+			if (counter == 0) {
+				FontRenderContext frcLocal = ((java.awt.Graphics2D) (parentEkit.getGraphics())).getFontRenderContext();
 				Rectangle2D fontBounds = buttonFont.getMaxCharBounds(frcLocal);
-				int maxCharWidth  = (int)(Math.abs(fontBounds.getX())) + (int)(Math.abs(fontBounds.getWidth()));
-				int maxCharHeight = (int)(Math.abs(fontBounds.getY())) + (int)(Math.abs(fontBounds.getHeight()));
+				int maxCharWidth = (int) (Math.abs(fontBounds.getX())) + (int) (Math.abs(fontBounds.getWidth()));
+				int maxCharHeight = (int) (Math.abs(fontBounds.getY())) + (int) (Math.abs(fontBounds.getHeight()));
 				Insets buttonInsets = buttonArray[counter].getBorder().getBorderInsets(buttonArray[counter]);
-				prefButtonWidth  = maxCharWidth + buttonInsets.left + buttonInsets.right;
+				prefButtonWidth = maxCharWidth + buttonInsets.left + buttonInsets.right;
 				prefButtonHeight = maxCharHeight + buttonInsets.top + buttonInsets.bottom;
 			}
 			buttonArray[counter].setPreferredSize(new Dimension(prefButtonWidth, prefButtonHeight));
@@ -473,7 +485,7 @@ public class UnicodeDialog extends JDialog implements ActionListener
 		jcmbBlockSelector.setActionCommand(CMDCHANGEBLOCK);
 		jcmbBlockSelector.addActionListener(this);
 
-		String[] sPages = { "1" };
+		String[] sPages = {"1"};
 		jcmbPageSelector = new JComboBox(sPages);
 		jcmbPageSelector.setSelectedIndex(0);
 		jcmbPageSelector.setActionCommand(CMDCHANGEBLOCK);
@@ -496,56 +508,45 @@ public class UnicodeDialog extends JDialog implements ActionListener
 		contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
 		this.pack();
-
+		this.setLocationRelativeTo(getParent());
 		populateButtons(startIndex, 0);
 
 		this.setVisible(true);
 	}
 
-	private void populateButtons(int index, int page)
-	{
+	private void populateButtons(int index, int page) {
 		int blockPages = ((unicodeBlockEnd[index] / UNICODEBLOCKSIZE) - (unicodeBlockStart[index] / UNICODEBLOCKSIZE)) + 1;
-		if(blockPages != jcmbPageSelector.getItemCount())
-		{
+		if (blockPages != jcmbPageSelector.getItemCount()) {
 			jcmbPageSelector.setActionCommand("");
 			jcmbPageSelector.setEnabled(false);
 			jcmbPageSelector.removeAllItems();
-			for(int i = 0; i < blockPages; i++)
-			{
+			for (int i = 0;i < blockPages;i++) {
 				jcmbPageSelector.addItem("" + (i + 1));
 			}
 			jcmbPageSelector.setEnabled(true);
 			jcmbPageSelector.update(this.getGraphics());
 			jcmbPageSelector.setActionCommand(CMDCHANGEBLOCK);
 		}
-		if(page > (jcmbPageSelector.getItemCount() - 1))
-		{
+		if (page > (jcmbPageSelector.getItemCount() - 1)) {
 			page = 0;
 		}
 
 		int firstInt = ((unicodeBlockStart[index] / UNICODEBLOCKSIZE) * UNICODEBLOCKSIZE) + (page * UNICODEBLOCKSIZE);
 		int currInt = firstInt;
-		for(int charInt = 0; charInt < UNICODEBLOCKSIZE; charInt++)
-		{
+		for (int charInt = 0;charInt < UNICODEBLOCKSIZE;charInt++) {
 			currInt = firstInt + charInt;
 			buttonArray[charInt].setSelected(false);
-			if(currInt < unicodeBlockStart[index] || currInt > unicodeBlockEnd[index])
-			{
+			if (currInt < unicodeBlockStart[index] || currInt > unicodeBlockEnd[index]) {
 				buttonArray[charInt].setText(" ");
 				buttonArray[charInt].getModel().setActionCommand(" ");
 				buttonArray[charInt].setEnabled(false);
 				buttonArray[charInt].setVisible(false);
-			}
-			else
-			{
-				char unichar = (char)currInt;
+			} else {
+				char unichar = (char) currInt;
 				String symbol = Character.toString(unichar);
-				if(buttonFont.canDisplay(unichar))
-				{
+				if (buttonFont.canDisplay(unichar)) {
 					buttonArray[charInt].setText(symbol);
-				}
-				else
-				{
+				} else {
 					buttonArray[charInt].setText(" ");
 				}
 				buttonArray[charInt].getModel().setActionCommand(symbol);

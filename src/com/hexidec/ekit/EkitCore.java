@@ -109,6 +109,7 @@ import com.hexidec.ekit.component.*;
 import com.hexidec.util.Base64Codec;
 import com.hexidec.util.Translatrix;
 import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
+import java.awt.Container;
 
 /**
  * EkitCore Main application class for editing and saving HTML in a Java text
@@ -118,13 +119,12 @@ import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
  * @version 1.1
  *
  * REQUIREMENTS Java 2 (JDK 1.5 or higher) Swing Library
- * 
- * 2020-04-28 Stephan Bodmer
- *   Support for Dialog parent for PropertiesDialog class
- * 
- * 2020-04-15 Stephan Bodmer
- *   Removed non utf-8 char
- * 
+ *
+ * 2020-04-28 Stephan Bodmer Support for Dialog parent for PropertiesDialog
+ * class
+ *
+ * 2020-04-15 Stephan Bodmer Removed non utf-8 char
+ *
  */
 public class EkitCore extends JPanel implements ActionListener, KeyListener, FocusListener, DocumentListener {
 
@@ -179,7 +179,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	private JComboBoxNoFocus jcmbStyleSelector;
 	private JComboBoxNoFocus jcmbFontSelector;
 
-	private Frame frameHandler;
+	private Container parentContainer;
 
 	private HTMLUtilities htmlUtilities = new HTMLUtilities(this);
 
@@ -444,8 +444,6 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		exclusiveEdit = editModeExclusive;
 		preserveUnknownTags = keepUnknownTags;
 		enterIsBreak = enterBreak;
-
-		frameHandler = new Frame();
 
 		// Obtain system clipboard if available
 		try {
@@ -920,7 +918,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		jMenuFontColor.add(new JMenuItem(new StyledEditorKit.ForegroundAction(Translatrix.getTranslationString("ColorYellow"), new Color(255, 255, 0))));
 		jMenuFont.add(jMenuFontColor);
 		htMenus.put(KEY_MENU_COLORS, jMenuFontColor);
-		
+
 		/* FORMAT Menu */
 		jMenuFormat = new JMenu(Translatrix.getTranslationString("Format"));
 		htMenus.put(KEY_MENU_FORMAT, jMenuFormat);
@@ -1613,11 +1611,12 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	}
 
 	/* ActionListener method */
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 		try {
 			String command = ae.getActionCommand();
 			if (command.equals(CMD_DOC_NEW) || command.equals(CMD_DOC_NEW_STYLED)) {
-				SimpleInfoDialog sidAsk = new SimpleInfoDialog(this.getFrame(), "", true, Translatrix.getTranslationString("AskNewDocument"), SimpleInfoDialog.QUESTION);
+				SimpleInfoDialog sidAsk = SimpleInfoDialog.newSimpleInfoDialog(getParentContainer(), "", true, Translatrix.getTranslationString("AskNewDocument"), SimpleInfoDialog.QUESTION);
 				String decision = sidAsk.getDecisionValue();
 				if (decision.equals(Translatrix.getTranslationString("DialogAccept"))) {
 					if (styleSheet != null && command.equals(CMD_DOC_NEW_STYLED)) {
@@ -1829,7 +1828,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			} else if (command.equals(CMD_EXIT)) {
 				this.dispose();
 			} else if (command.equals(CMD_HELP_ABOUT)) {
-				new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("About"), true, Translatrix.getTranslationString("AboutMessage"), SimpleInfoDialog.INFO);
+				SimpleInfoDialog.newSimpleInfoDialog(getTopLevelAncestor(), Translatrix.getTranslationString("About"), true, Translatrix.getTranslationString("AboutMessage"), SimpleInfoDialog.INFO);
 			} else if (command.equals(CMD_ENTER_PARAGRAPH)) {
 				setEnterKeyIsBreak(false);
 			} else if (command.equals(CMD_ENTER_BREAK)) {
@@ -1839,19 +1838,19 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			}
 		} catch (IOException ioe) {
 			logException("IOException in actionPerformed method", ioe);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
 		} catch (BadLocationException ble) {
 			logException("BadLocationException in actionPerformed method", ble);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
 		} catch (NumberFormatException nfe) {
 			logException("NumberFormatException in actionPerformed method", nfe);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorNumberFormatException"), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorNumberFormatException"), SimpleInfoDialog.ERROR);
 		} catch (ClassNotFoundException cnfe) {
 			logException("ClassNotFound Exception in actionPerformed method", cnfe);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorClassNotFoundException "), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorClassNotFoundException "), SimpleInfoDialog.ERROR);
 		} catch (RuntimeException re) {
 			logException("RuntimeException in actionPerformed method", re);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorRuntimeException"), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorRuntimeException"), SimpleInfoDialog.ERROR);
 		}
 	}
 
@@ -1908,10 +1907,10 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 				}
 			} catch (BadLocationException ble) {
 				logException("BadLocationException in keyTyped method", ble);
-				new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
+				SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
 			} catch (IOException ioe) {
 				logException("IOException in keyTyped method", ioe);
-				new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
+				SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
 			}
 		} else if (ke.getKeyChar() == KeyEvent.VK_ENTER) {
 			try {
@@ -1970,20 +1969,22 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 				}
 			} catch (BadLocationException ble) {
 				logException("BadLocationException in keyTyped method", ble);
-				new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
+				SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
 			} catch (IOException ioe) {
 				logException("IOException in keyTyped method", ioe);
-				new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
+				SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorIOException"), SimpleInfoDialog.ERROR);
 			}
 		}
 	}
 
+	@Override
 	public void keyPressed(KeyEvent ke) {
 		if (ke.getKeyChar() == KeyEvent.VK_ENTER && enterIsBreak) {
 			ke.consume();
 		}
 	}
 
+	@Override
 	public void keyReleased(KeyEvent ke) {
 		if (ke.getKeyChar() == KeyEvent.VK_ENTER && enterIsBreak) {
 			ke.consume();
@@ -1991,6 +1992,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	}
 
 	/* FocusListener methods */
+	@Override
 	public void focusGained(FocusEvent fe) {
 		if (fe.getSource() == jtpMain) {
 			setFormattersActive(true);
@@ -1999,18 +2001,23 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		}
 	}
 
+	@Override
 	public void focusLost(FocusEvent fe) {
+		//---
 	}
 
 	/* DocumentListener methods */
+	@Override
 	public void changedUpdate(DocumentEvent de) {
 		handleDocumentChange(de);
 	}
 
+	@Override
 	public void insertUpdate(DocumentEvent de) {
 		handleDocumentChange(de);
 	}
 
+	@Override
 	public void removeUpdate(DocumentEvent de) {
 		handleDocumentChange(de);
 	}
@@ -2175,8 +2182,9 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 				refreshOnUpdate();
 			}
 			propertiesDialog.dispose();
+
 		} else {
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Table"), true, Translatrix.getTranslationString("CursorNotInTable"));
+			SimpleInfoDialog.newSimpleInfoDialog(getTopLevelAncestor(), Translatrix.getTranslationString("Table"), true, Translatrix.getTranslationString("CursorNotInTable"), SimpleInfoDialog.WARNING);
 		}
 	}
 
@@ -2221,8 +2229,9 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 				refreshOnUpdate();
 			}
 			propertiesDialog.dispose();
+
 		} else {
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Cell"), true, Translatrix.getTranslationString("CursorNotInCell"));
+			SimpleInfoDialog.newSimpleInfoDialog(getTopLevelAncestor(), Translatrix.getTranslationString("Cell"), true, Translatrix.getTranslationString("CursorNotInCell"), SimpleInfoDialog.WARNING);
 		}
 	}
 
@@ -2411,8 +2420,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for inserting a break (BR) element
 	 */
-	private void insertBreak()
-			throws IOException, BadLocationException, RuntimeException {
+	private void insertBreak() throws IOException, BadLocationException, RuntimeException {
 		int caretPos = jtpMain.getCaretPosition();
 		htmlKit.insertHTML(htmlDoc, caretPos, "<BR>", 0, 0, HTML.Tag.BR);
 		jtpMain.setCaretPosition(caretPos + 1);
@@ -2421,8 +2429,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for inserting a horizontal rule (HR) element
 	 */
-	private void insertHR()
-			throws IOException, BadLocationException, RuntimeException {
+	private void insertHR()	throws IOException, BadLocationException, RuntimeException {
 		int caretPos = jtpMain.getCaretPosition();
 		htmlKit.insertHTML(htmlDoc, caretPos, "<HR>", 0, 0, HTML.Tag.HR);
 		jtpMain.setCaretPosition(caretPos + 1);
@@ -2431,16 +2438,14 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for opening the Unicode dialog
 	 */
-	private void insertUnicode(int index)
-			throws IOException, BadLocationException, RuntimeException {
-		new UnicodeDialog(this, Translatrix.getTranslationString("UnicodeDialogTitle"), false, index);
+	private void insertUnicode(int index) throws IOException, BadLocationException, RuntimeException {
+		UnicodeDialog.newUnicodeDialog(this, Translatrix.getTranslationString("UnicodeDialogTitle"), false, index);
 	}
 
 	/**
 	 * Method for inserting Unicode characters via the UnicodeDialog class
 	 */
-	public void insertUnicodeChar(String sChar)
-			throws IOException, BadLocationException, RuntimeException {
+	public void insertUnicodeChar(String sChar)	throws IOException, BadLocationException, RuntimeException {
 		int caretPos = jtpMain.getCaretPosition();
 		if (sChar != null) {
 			htmlDoc.insertString(caretPos, sChar, jtpMain.getInputAttributes());
@@ -2451,8 +2456,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for inserting a non-breaking space (&nbsp;)
 	 */
-	private void insertNonbreakingSpace()
-			throws IOException, BadLocationException, RuntimeException {
+	private void insertNonbreakingSpace() throws IOException, BadLocationException, RuntimeException {
 		int caretPos = jtpMain.getCaretPosition();
 		htmlDoc.insertString(caretPos, "\240", jtpMain.getInputAttributes());
 		jtpMain.setCaretPosition(caretPos + 1);
@@ -2572,7 +2576,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			searchPane = (JTextComponent) jtpSource;
 		}
 		if (searchFindTerm == null || (bIsFindReplace && searchReplaceTerm == null)) {
-			SearchDialog sdSearchInput = new SearchDialog(this.getFrame(), Translatrix.getTranslationString("SearchDialogTitle"), true, bIsFindReplace, bCaseSensitive, bStartAtTop);
+			SearchDialog sdSearchInput = SearchDialog.newSearchDialog(this.getParentContainer(), Translatrix.getTranslationString("SearchDialogTitle"), true, bIsFindReplace, bCaseSensitive, bStartAtTop);
 			searchFindTerm = sdSearchInput.getFindTerm();
 			searchReplaceTerm = sdSearchInput.getReplaceTerm();
 			bCaseSensitive = sdSearchInput.getCaseSensitive();
@@ -2588,13 +2592,15 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 						findOffset = findOffset + searchReplaceTerm.length();
 						results = findText(searchFindTerm, searchReplaceTerm, bCaseSensitive, findOffset);
 					}
+					
 				} else {
-					new SimpleInfoDialog(this.getFrame(), "", true, Translatrix.getTranslationString("ErrorNoOccurencesFound") + ":\n" + searchFindTerm, SimpleInfoDialog.WARNING);
+					SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), "", true, Translatrix.getTranslationString("ErrorNoOccurencesFound") + ":\n" + searchFindTerm, SimpleInfoDialog.WARNING);
 				}
+				
 			} else {
 				int results = findText(searchFindTerm, searchReplaceTerm, bCaseSensitive, (bStartAtTop ? 0 : searchPane.getCaretPosition()));
 				if (results == -1) {
-					new SimpleInfoDialog(this.getFrame(), "", true, Translatrix.getTranslationString("ErrorNoMatchFound") + ":\n" + searchFindTerm, SimpleInfoDialog.WARNING);
+					SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), "", true, Translatrix.getTranslationString("ErrorNoMatchFound") + ":\n" + searchFindTerm, SimpleInfoDialog.WARNING);
 				}
 			}
 			lastSearchFindTerm = new String(searchFindTerm);
@@ -2645,7 +2651,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			}
 		} catch (BadLocationException ble) {
 			logException("BadLocationException in actionPerformed method", ble);
-			new SimpleInfoDialog(this.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
+			SimpleInfoDialog.newSimpleInfoDialog(this.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorBadLocationException"), SimpleInfoDialog.ERROR);
 		}
 		return searchPlace;
 	}
@@ -2703,7 +2709,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	/**
 	 * Method for saving text as a complete HTML document
 	 */
-	public void writeOut(HTMLDocument doc, File whatFile)throws IOException, BadLocationException {
+	public void writeOut(HTMLDocument doc, File whatFile) throws IOException, BadLocationException {
 		if (whatFile == null) {
 			whatFile = getFileFromChooser(".", JFileChooser.SAVE_DIALOG, extsHTML, Translatrix.getTranslationString("FiletypeHTML"));
 		}
@@ -2791,7 +2797,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		refreshOnUpdate();
 	}
 
-	public void writeOutBase64(String text)	throws IOException, BadLocationException {
+	public void writeOutBase64(String text) throws IOException, BadLocationException {
 		File whatFile = getFileFromChooser(".", JFileChooser.SAVE_DIALOG, extsB64, Translatrix.getTranslationString("FiletypeB64"));
 		if (whatFile != null) {
 			writeOutBase64(text, whatFile);
@@ -3094,17 +3100,17 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	}
 
 	/**
-	 * Convenience method for obtaining the application as a Frame
+	 * Convenience method for obtaining the parent container (Frame or Dialog)
 	 */
-	public Frame getFrame() {
-		return frameHandler;
+	public Container getParentContainer() {
+		return parentContainer;
 	}
 
 	/**
 	 * Convenience method for setting the parent Frame
 	 */
-	public void setFrame(Frame parentFrame) {
-		frameHandler = parentFrame;
+	public void setParentContainer(Container parentContainer) {
+		this.parentContainer = parentContainer;
 	}
 
 	/**
@@ -3395,7 +3401,8 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	 * Convenience method for obtaining the document text
 	 */
 	private void updateTitle() {
-		frameHandler.setTitle(appName + (currentFile == null ? "" : " - " + currentFile.getName()));
+		//--- Do nothing, we are not in frame context in all cases
+		// parentContainer.setTitle(appName + (currentFile == null ? "" : " - " + currentFile.getName()));
 	}
 
 	/**
@@ -3428,7 +3435,6 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 	 * Convenience method for deallocating the app resources
 	 */
 	public void dispose() {
-		frameHandler.dispose();
 		System.exit(0);
 	}
 
@@ -3604,6 +3610,8 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 
 	/**
 	 * Utility methods
+	 *
+	 * @return
 	 */
 	public ExtendedHTMLDocument getExtendedHtmlDoc() {
 		return (ExtendedHTMLDocument) htmlDoc;
@@ -3630,11 +3638,11 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 		JMenu jm = htMenus.get(key);
 		if (jm != null) jm.setVisible(visible);
 	}
-	
+
 	public JMenu getMenu(String key) {
 		return htMenus.get(key);
 	}
-	
+
 	/**
 	 * Accessors for enter key behaviour flag
 	 */

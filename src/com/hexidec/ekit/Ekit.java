@@ -84,7 +84,7 @@ public class Ekit extends JFrame implements WindowListener
 			ekitCore = new EkitCore(false, sDocument, sStyleSheet, sRawDocument, null, urlStyleSheet, includeToolBar, showViewSource, showMenuIcons, editModeExclusive, sLanguage, sCountry, base64, debugMode, false, multiBar, (multiBar ? EkitCore.TOOLBAR_DEFAULT_MULTI : EkitCore.TOOLBAR_DEFAULT_SINGLE), enterBreak);
 		}
 
-		ekitCore.setFrame(this);
+		ekitCore.setParentContainer(this);
 
 		/* Add the components to the app */
 		if(includeToolBar)

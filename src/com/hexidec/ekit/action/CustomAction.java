@@ -73,7 +73,7 @@ public class CustomAction extends StyledEditorKit.StyledTextAction {
 				textLength = selText.length();
 			}
 			if (selText == null || textLength < 1) {
-				SimpleInfoDialog sidWarn = new SimpleInfoDialog(parentEkit.getFrame(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorNoTextSelected"), SimpleInfoDialog.ERROR);
+				SimpleInfoDialog sidWarn = SimpleInfoDialog.newSimpleInfoDialog(parentEkit.getParentContainer(), Translatrix.getTranslationString("Error"), true, Translatrix.getTranslationString("ErrorNoTextSelected"), SimpleInfoDialog.ERROR);
 			} else {
 				int caretOffset = parentTextPane.getSelectionStart();
 				int internalTextLength = selText.length();
@@ -112,8 +112,7 @@ public class CustomAction extends StyledEditorKit.StyledTextAction {
 				SimpleAttributeSet sasAttr = new SimpleAttributeSet();
 				if (htmlTag.toString().equals(HTML.Tag.A.toString())) {
 					if (!htmlAttribs.containsKey("href")) {
-						JComponent comp = (JComponent) ae.getSource();
-						UserInputAnchorDialog uidInput = UserInputAnchorDialog.newUserInputAnchorDialog(comp.getTopLevelAncestor(), parentEkit, Translatrix.getTranslationString("AnchorDialogTitle"), true, currentAnchor);
+						UserInputAnchorDialog uidInput = UserInputAnchorDialog.newUserInputAnchorDialog(parentEkit.getParentContainer(), parentEkit, Translatrix.getTranslationString("AnchorDialogTitle"), true, currentAnchor);
 						String newAnchor = uidInput.getInputText();
 						uidInput.dispose();
 						if (newAnchor != null) {
@@ -125,7 +124,7 @@ public class CustomAction extends StyledEditorKit.StyledTextAction {
 					}
 				} else if (htmlTag.toString().equals(HTML.Tag.FONT.toString())) {
 					if (htmlAttribs.containsKey("color")) {
-						Color color = new JColorChooser().showDialog(parentEkit.getFrame(), Translatrix.getTranslationString("CustomColorDialog"), Color.black);
+						Color color = new JColorChooser().showDialog(parentEkit.getParentContainer(), Translatrix.getTranslationString("CustomColorDialog"), Color.black);
 						if (color != null) {
 							StyledEditorKit.ForegroundAction customColorAction = new StyledEditorKit.ForegroundAction("CustomColor", color);
 							customColorAction.actionPerformed(ae);

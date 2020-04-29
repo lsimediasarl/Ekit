@@ -84,7 +84,7 @@ public class EkitCoreSpell extends EkitCore implements SpellCheckListener
 		{
 			e.printStackTrace();
 		}
-		spellDialog = new JSpellDialog(this.getFrame(), Translatrix.getTranslationString("ToolSpellcheckDialog"), true);
+		spellDialog = JSpellDialog.newJSpellDialog(this.getParentContainer(), Translatrix.getTranslationString("ToolSpellcheckDialog"), true);
 	}
 
 	/** Raw/Base64 Document & Style Sheet URL Constructor (Ideal for EkitApplet)

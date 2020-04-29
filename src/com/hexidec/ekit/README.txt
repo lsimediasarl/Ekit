@@ -678,7 +678,7 @@ VERSION HISTORY
 1.3 (7/4/2007)
     - greatly enhanced table and cell editing features (Thanks to Elisabeth Novotny)
     - added printing capabilities (Thanks to Kei Gauthier and Maciej Kubicki)
-    - added language files for Turkish (Thanks to Melih Çetin)
+    - added language files for Turkish (Thanks to Melih ï¿½etin)
 1.4 (3/27/2008)
     - all code updated to use Java 1.5 features
     - added ParserCallback methods (Thanks to Janko Jochimsen)
@@ -861,7 +861,7 @@ Mark de Haan (mark AT starwave DOT nl)
 Samuel Dmaz
     - Spanish (Mexican)
         LanguageResources_es_MX.properties
-Tamás Érdfalvi (devnull AT eagent DOT hu)
+Tamï¿½s ï¿½rdfalvi (devnull AT eagent DOT hu)
     - Hungarian
         LanguageResources_hu_HU.properties
 Yang Yu (yangyu AT users DOT sourceforge DOT net)
@@ -882,7 +882,7 @@ Piotr Malinski (riklaunim AT gmail DOT com)
 Vitaliy Yakovchuk (yakovchuk25 AT ukr DOT net)
     - Ukrainian
         LanguageResources_ru_UK.properties
-Melih Çetin (cetin DOT melih AT gmail.com)
+Melih ï¿½etin (cetin DOT melih AT gmail.com)
     - Turkish
         LanguageResources_tr_TR.properties
 Procelerate Technologies, Inc.
