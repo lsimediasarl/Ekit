@@ -46,6 +46,7 @@ public class FormatAction extends StyledEditorKit.StyledTextAction {
 		htmlTag = inTag;
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent ae) {
 		JTextPane parentTextPane = parentEkit.getTextPane();
 		String selText = parentTextPane.getSelectedText();
