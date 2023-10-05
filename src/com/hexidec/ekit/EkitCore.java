@@ -110,6 +110,7 @@ import com.hexidec.util.Base64Codec;
 import com.hexidec.util.Translatrix;
 import com.hexidec.ekit.thirdparty.print.DocumentRenderer;
 import java.awt.Container;
+import javax.swing.UIManager;
 
 /**
  * EkitCore Main application class for editing and saving HTML in a Java text
@@ -502,7 +503,7 @@ public class EkitCore extends JPanel implements ActionListener, KeyListener, Foc
 			jtpSource = new JTextArea(sdocSource);
 			jtpMain.setText(jtpSource.getText());
 		}
-		jtpSource.setBackground(new Color(212, 212, 212));
+		jtpSource.setBackground(UIManager.getColor("Panel.background"));
 		jtpSource.setSelectionColor(new Color(255, 192, 192));
 		jtpSource.setMargin(new Insets(4, 4, 4, 4));
 		jtpSource.getDocument().addDocumentListener(this);
